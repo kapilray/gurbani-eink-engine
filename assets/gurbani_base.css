@@ -55,16 +55,30 @@ body {
     white-space: nowrap;
 }
 
+/* ── Paragraph break after salok / before first pauri body ── */
+.pauri-start {
+    margin-top: 1.8em;
+}
+
 /* ── Credits page ────────────────────────────────────────── */
 .credits-page {
     text-align: left;
     font-size: 0.82em;
 }
 
+.credits-ikonkar {
+    text-align: center;
+    font-size: 2em;
+    line-height: 1.3;
+    color: #333;
+    margin-bottom: 0.2em;
+}
+
 .credits-invocation {
-    font-size: 1.15em;
-    color: #444;
-    margin-bottom: 0.8em;
+    text-align: center;
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 0.9em;
 }
 
 .credits-heading {

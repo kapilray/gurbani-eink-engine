@@ -1,5 +1,6 @@
 import io
 import os
+import re
 from PIL import Image
 from ebooklib import epub
 from modules.shaper.shaper import atomic_shaper
@@ -28,18 +29,31 @@ _IK_ONKAR = 'ੴ'
 def _build_content_xhtml(pauris: list[dict]) -> str:
     parts = []
     for pauri in pauris:
+        has_manglacharan = any(l['type'] == 'manglacharan' for l in pauri['lines'])
         parts.append('<div class="pauri">')
+        prev_was_salok_end = False
+
         for line in pauri['lines']:
             text      = line['text']
             line_type = line['type']
+
             # Ik Onkar gets its own full line at 2× size for any Bani that opens with it
             if line_type == 'manglacharan' and text.startswith(_IK_ONKAR):
                 parts.append(f'  <p class="line ikonkar"><span class="word">{_IK_ONKAR}</span></p>')
                 rest = text[len(_IK_ONKAR):].strip()
                 if rest:
                     parts.append(f'  <p class="line manglacharan">{atomic_shaper(rest)}</p>')
+                prev_was_salok_end = False
             else:
-                parts.append(f'  <p class="line {line_type}">{atomic_shaper(text)}</p>')
+                # In a pauri with manglacharan, insert a visual break after the salok
+                # closing verse (ending ॥੧॥) before the first main pankti begins
+                extra_class = ''
+                if prev_was_salok_end and line_type == 'pankti' and has_manglacharan:
+                    extra_class = ' pauri-start'
+                parts.append(f'  <p class="line {line_type}{extra_class}">{atomic_shaper(text)}</p>')
+                prev_was_salok_end = (line_type == 'pankti' and
+                                      bool(re.search(r'॥\d+॥\s*$', text)))
+
         parts.append('</div>')
 
     body = '\n'.join(parts)
@@ -68,28 +82,41 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
 </head>
 <body>
 <div class="credits-page">
-  <p class="credits-invocation" lang="pa" xml:lang="pa">ੴ ਸਤਿਗੁਰ ਪ੍ਰਸਾਦਿ ॥</p>
+  <p class="credits-ikonkar" lang="pa" xml:lang="pa">ੴ</p>
+  <p class="credits-invocation" lang="pa" xml:lang="pa">ਸਤਿਗੁਰ ਪ੍ਰਸਾਦਿ ॥</p>
   <p class="credits-heading">Acknowledgements</p>
 
   <div class="credit-person">
     <span class="credit-person-name">Ravina Toor</span>
     <span class="credit-person-role">Cover Art <em>(permission pending)</em></span>
-    <span class="credit-person-note"><a href="https://ravinartoor.com">ravinartoor.com</a></span>
+    <span class="credit-person-note">ravinartoor.com</span>
   </div>
 
   <div class="credit-person">
     <span class="credit-person-name">Maneetpaul Singh</span>
     <span class="credit-person-role">Device Testing Sewa</span>
-    <span class="credit-person-note">Maneetpaul&#8217;s videos on <a href="https://www.youtube.com/@Maneetpaul">@Maneetpaul</a> inspired so many members of the Sangat &#8212; including the creator of this project &#8212; to discover the peace of reading Gurbani on e-ink. He very kindly gave his time and devices to test this publication across hardware. Shukariya.</span>
+    <span class="credit-person-note">Maneetpaul&#8217;s videos at youtube.com/@Maneetpaul inspired so many members of the Sangat &#8212; including this sewadar &#8212; to discover the e-ink reader. He very kindly gave his time and multiple devices to test this publication across hardware. Shukariya.</span>
+  </div>
+
+  <div class="credit-person">
+    <span class="credit-person-name">Shabad OS</span>
+    <span class="credit-person-role">Open Gurbani Database</span>
+    <span class="credit-person-note">The contributors behind Shabad OS &#8212; including harjot1singh, bhajneet, saihaj, and the wider open-source community &#8212; built the versioned, meticulously maintained Gurbani database this engine is built upon. Their dedication to making Gurbani digitally accessible is seva at its finest. shabados.com</span>
+  </div>
+
+  <div class="credit-person">
+    <span class="credit-person-name">Khalis Foundation</span>
+    <span class="credit-person-role">Two Decades of Digital Sewa</span>
+    <span class="credit-person-note">For over 20 years, the Khalis Foundation has quietly and persistently built the digital infrastructure that lets projects like this one exist &#8212; from BaniDB to tools that bring Gurbani to contemporary Sikh life. Their work is the ground this project stands on. khalisfoundation.org</span>
   </div>
 
   <div class="credits-technical">
-    <p><strong>Gurbani:</strong> Sri Guru Granth Sahib Ji, Ang 1&#8211;8 &#183; Shabadaarth SGGS (Vols. 1&#8211;4), SGPC, Sri Amritsar, 2009&#8211;2012 &#183; Shabad OS Database v4.8.7 &#8212; <a href="https://github.com/shabados/database">github.com/shabados/database</a></p>
+    <p><strong>Gurbani:</strong> Sri Guru Granth Sahib Ji, Ang 1&#8211;8 &#183; Shabadaarth SGGS (Vols. 1&#8211;4), SGPC, Sri Amritsar, 2009&#8211;2012 &#183; Shabad OS Database v4.8.7 &#8212; github.com/shabados/database</p>
     <p><strong>Font:</strong> Tiro Gurmukhi &#8212; Tiro Typeworks (OFL)</p>
   </div>
 
   <div class="disclaimer">
-    <p>Every effort has been made to accurately represent the Gurbani. If you find an error, please write to <a href="mailto:1guru.rakha@gmail.com">1guru.rakha@gmail.com</a></p>
+    <p>Every effort has been made to accurately represent the Gurbani. If you find an error, please write to 1guru.rakha@gmail.com</p>
     <p class="bhul-chuk" lang="pa" xml:lang="pa">ਭੁੱਲ ਚੁੱਕ ਮਾਫ਼</p>
   </div>
 </div>
