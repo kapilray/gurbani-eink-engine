@@ -22,13 +22,24 @@ def _cover_to_jpeg(cover_path: str, quality: int = 85) -> bytes:
         return buf.getvalue()
 
 
+_IK_ONKAR = 'ੴ'
+
+
 def _build_content_xhtml(pauris: list[dict]) -> str:
     parts = []
     for pauri in pauris:
         parts.append('<div class="pauri">')
         for line in pauri['lines']:
-            shaped = atomic_shaper(line['text'])
-            parts.append(f'  <p class="line {line["type"]}">{shaped}</p>')
+            text      = line['text']
+            line_type = line['type']
+            # Ik Onkar gets its own full line at 2× size for any Bani that opens with it
+            if line_type == 'manglacharan' and text.startswith(_IK_ONKAR):
+                parts.append(f'  <p class="line ikonkar"><span class="word">{_IK_ONKAR}</span></p>')
+                rest = text[len(_IK_ONKAR):].strip()
+                if rest:
+                    parts.append(f'  <p class="line manglacharan">{atomic_shaper(rest)}</p>')
+            else:
+                parts.append(f'  <p class="line {line_type}">{atomic_shaper(text)}</p>')
         parts.append('</div>')
 
     body = '\n'.join(parts)
@@ -65,8 +76,8 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
   </div>
 
   <div class="credit-row">
-    <span class="credit-label">Gurbani Data</span>
-    <span class="credit-value">Shabad OS — <a href="https://shabados.com">shabados.com</a></span>
+    <span class="credit-label">Gurbani Source</span>
+    <span class="credit-value">Shabad OS Database v4.8.7 — <a href="https://github.com/shabados/database">github.com/shabados/database</a></span>
   </div>
 
   <div class="credit-row">
@@ -75,13 +86,19 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
   </div>
 
   <div class="credit-row">
-    <span class="credit-label">Development</span>
-    <span class="credit-value">Gurbani-EInk Team</span>
+    <span class="credit-label">Source Text</span>
+    <span class="credit-value">Sri Guru Granth Sahib Ji — Public Domain</span>
   </div>
 
   <div class="credit-row">
-    <span class="credit-label">Source Text</span>
-    <span class="credit-value">Sri Guru Granth Sahib Ji — Public Domain</span>
+    <span class="credit-label">Development</span>
+    <span class="credit-value">Gurbani-EInk Engine</span>
+  </div>
+
+  <div class="disclaimer">
+    <p>Every effort has been made to accurately represent the Gurbani text in this publication. The source is the Shabad OS Database v4.8.7, an open, versioned, community-maintained database of Gurbani — the most authoritative digital source available.</p>
+    <p>If you find an error or rendering issue, please write to <a href="mailto:1guru.rakha@gmail.com">1guru.rakha@gmail.com</a></p>
+    <p class="bhul-chuk" lang="pa" xml:lang="pa">ਭੁੱਲ ਚੁੱਕ ਮਾਫ਼</p>
   </div>
 </div>
 </body>
@@ -108,8 +125,24 @@ def build_epub(
     book.add_metadata('DC', 'description',
                       'The complete Japji Sahib in Unicode Gurmukhi, formatted for e-ink devices.')
 
-    # Cover — always JPEG in the EPUB; set_cover() adds the item internally
-    book.set_cover('images/cover.jpg', cover_bytes)
+    # Cover image — register with create_page=False so ebooklib does NOT generate its
+    # own bare cover.xhtml (which renders partially on Kobo due to missing viewport CSS).
+    book.set_cover('images/cover.jpg', cover_bytes, create_page=False)
+
+    # Cover HTML — our own page with explicit viewport-filling CSS
+    cover_ch = epub.EpubHtml(uid='cover', title='Cover', file_name='cover.xhtml', lang='pa')
+    cover_ch.content = b'''<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pa" lang="pa">
+<head>
+  <meta charset="utf-8"/>
+  <title>Cover</title>
+</head>
+<body style="margin: 0; padding: 0;">
+  <img src="images/cover.jpg" alt="Cover" style="width: 100%; height: 100%; display: block;"/>
+</body>
+</html>'''
+    book.add_item(cover_ch)
 
     # Font
     book.add_item(epub.EpubItem(

@@ -22,6 +22,12 @@ body {
     margin: 0.15em 0;
 }
 
+.ikonkar {
+    font-size: 2em;
+    line-height: 1.4;
+    margin-bottom: 0.3em;
+}
+
 .manglacharan {
     font-size: 1.05em;
     margin-bottom: 0.6em;
@@ -87,4 +93,30 @@ body {
 .credit-value a {
     color: #5a4030;
     text-decoration: none;
+}
+
+.disclaimer {
+    margin-top: 2.5em;
+    padding-top: 1.2em;
+    border-top: 1px solid #ddd;
+    font-family: serif;
+    font-size: 0.82em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.disclaimer a {
+    color: #5a4030;
+    text-decoration: none;
+}
+
+.disclaimer p {
+    margin-bottom: 0.9em;
+}
+
+.bhul-chuk {
+    font-family: 'TiroGurmukhi', serif;
+    font-size: 1.1em;
+    color: #333;
+    margin-top: 1em;
 }
