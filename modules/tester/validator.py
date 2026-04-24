@@ -25,7 +25,7 @@ def validate_epub(epub_path: str) -> list[str]:
 
         # 3. Content XHTML checks
         # Only validate Gurmukhi content files — skip nav, cover, credits
-        skip = {'nav', 'cover', 'credits', 'reader_note'}
+        skip = {'nav', 'cover', 'credits'}
         content_xhtml = [
             n for n in names
             if n.endswith('.xhtml')

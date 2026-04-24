@@ -87,7 +87,7 @@ def extract_epub(epub_path: str, extract_dir: str) -> str:
     os.makedirs(extract_dir)
     with zipfile.ZipFile(epub_path, 'r') as z:
         z.extractall(extract_dir)
-    skip = {'nav.xhtml', 'cover.xhtml', 'credits.xhtml', 'reader_note.xhtml'}
+    skip = {'nav.xhtml', 'cover.xhtml', 'credits.xhtml'}
     for root, _, files in os.walk(extract_dir):
         for f in sorted(files):
             if f.endswith('.xhtml') and f not in skip:

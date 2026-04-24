@@ -62,7 +62,7 @@ def _build_content_xhtml(pauris: list[dict]) -> str:
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pa" lang="pa">
 <head>
   <meta charset="utf-8"/>
-  <title>ਜਪੁਜੀ ਸਾਹਿਬ</title>
+  <title>Japji Sahib</title>
   <link rel="stylesheet" type="text/css" href="styles/gurbani_base.css"/>
 </head>
 <body>
@@ -165,7 +165,7 @@ def build_epub(
 
     book = epub.EpubBook()
     book.set_identifier('japji-sahib-eink-001')
-    book.set_title('ਜਪੁਜੀ ਸਾਹਿਬ — Japji Sahib')
+    book.set_title('Japji Sahib')
     book.set_language('pa')
     book.add_author('Guru Nanak Dev Ji')
     book.add_metadata('DC', 'description',
@@ -214,13 +214,6 @@ def build_epub(
     content_ch.add_item(css_item)
     book.add_item(content_ch)
 
-    # Reader note chapter
-    note_xhtml = _build_reader_note_xhtml()
-    note_ch = epub.EpubHtml(title='Before You Begin', file_name='reader_note.xhtml', lang='en')
-    note_ch.content = note_xhtml.encode('utf-8')
-    note_ch.add_item(css_item)
-    book.add_item(note_ch)
-
     # Credits chapter
     credits_xhtml = _build_credits_xhtml()
     credits_ch = epub.EpubHtml(title='Contributions', file_name='credits.xhtml', lang='en')
@@ -233,12 +226,11 @@ def build_epub(
     book.add_item(epub.EpubNav())
 
     book.toc = (
-        epub.Link('reader_note.xhtml', 'Before You Begin', 'note'),
-        epub.Link('japji_sahib.xhtml', 'Japji Sahib',      'japji'),
-        epub.Link('credits.xhtml',     'Contributions',    'credits'),
+        epub.Link('japji_sahib.xhtml', 'Japji Sahib',   'japji'),
+        epub.Link('credits.xhtml',     'Contributions', 'credits'),
     )
-    # Spine: cover → reader note → content → credits. Nav is not a reading document.
-    book.spine = ['cover', note_ch, content_ch, credits_ch]
+    # Spine: cover → content → credits. Nav is not a reading document.
+    book.spine = ['cover', content_ch, credits_ch]
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     epub.write_epub(output_path, book, {})
