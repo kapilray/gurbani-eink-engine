@@ -61,7 +61,7 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
 
   <div class="credit-row">
     <span class="credit-label">Cover Art</span>
-    <span class="credit-value"><a href="https://ravinartoor.com">RAVINARTOOR</a></span>
+    <span class="credit-value"><a href="https://ravinartoor.com">RAVINARTOOR</a> (permission pending)</span>
   </div>
 
   <div class="credit-row">

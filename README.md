@@ -2,7 +2,7 @@
 
 A purpose-built pipeline for producing pixel-perfect, reflowable EPUBs of Gurbani and Gurbani-related texts — optimized for every major Kindle and Kobo e-ink device.
 
-The first publication is **Japji Sahib** by Guru Nanak Dev Ji, with cover art by [RAVINARTOOR](https://ravinartoor.com).
+The first publication is **Japji Sahib** by Guru Nanak Dev Ji, with cover art by [RAVINARTOOR](https://ravinartoor.com) *(permission pending — see [issue #1](https://github.com/kapilray/gurbani-eink-engine/issues/1))*.
 
 > **Found a bug or rendering issue?** [Open an issue →](https://github.com/your-org/gurbani-eink-engine/issues/new) or email [1guru.rakha@gmail.com](mailto:1guru.rakha@gmail.com)
 
@@ -12,7 +12,7 @@ The first publication is **Japji Sahib** by Guru Nanak Dev Ji, with cover art by
 
 | Contribution | Credit |
 |---|---|
-| **Cover Art** | [RAVINARTOOR](https://ravinartoor.com) |
+| **Cover Art** | [RAVINARTOOR](https://ravinartoor.com) *(permission pending)* |
 | **Gurbani Source** | [Shabad OS Database](https://github.com/shabados/database) |
 | **Font** | [Tiro Gurmukhi](https://github.com/TiroTypeworks) — Tiro Typeworks (OFL License) |
 | **Source Text** | Sri Guru Granth Sahib Ji — Public Domain |
