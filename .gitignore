@@ -15,6 +15,7 @@ modules/fetcher/database.sqlite
 # Generated files (rebuilt from source)
 modules/fetcher/japji_full.json
 output/previews/
+output/v*/
 
 # Output EPUB (built artifact — distribute separately)
 # Uncomment to also exclude the EPUB itself:
