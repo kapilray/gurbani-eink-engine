@@ -5,7 +5,7 @@
 
 body {
     font-family: 'TiroGurmukhi', serif;
-    line-height: 1.9;
+    line-height: 2.2;
     padding: 1.5em 1.2em;
     background: #fff;
     color: #111;
@@ -48,8 +48,10 @@ body {
 }
 
 /* ── Word atomicity (reflow protection) ──────────────────── */
+/* inline (not inline-block) so combining marks like sihari (ਿ) that
+   extend leftward of their consonant are never clipped by a box boundary */
 .word {
-    display: inline-block;
+    display: inline;
     white-space: nowrap;
 }
 

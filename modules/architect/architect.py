@@ -209,7 +209,7 @@ def build_epub(
 
     # Content chapter
     content_xhtml = _build_content_xhtml(pauris)
-    content_ch = epub.EpubHtml(title='ਜਪੁਜੀ ਸਾਹਿਬ', file_name='japji_sahib.xhtml', lang='pa')
+    content_ch = epub.EpubHtml(title='Japji Sahib', file_name='japji_sahib.xhtml', lang='pa')
     content_ch.content = content_xhtml.encode('utf-8')
     content_ch.add_item(css_item)
     book.add_item(content_ch)
@@ -234,7 +234,7 @@ def build_epub(
 
     book.toc = (
         epub.Link('reader_note.xhtml', 'Before You Begin', 'note'),
-        epub.Link('japji_sahib.xhtml', 'ਜਪੁਜੀ ਸਾਹਿਬ',     'japji'),
+        epub.Link('japji_sahib.xhtml', 'Japji Sahib',      'japji'),
         epub.Link('credits.xhtml',     'Contributions',    'credits'),
     )
     # Spine: cover → reader note → content → credits. Nav is not a reading document.
