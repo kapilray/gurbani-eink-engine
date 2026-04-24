@@ -95,7 +95,7 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
   <div class="credit-person">
     <span class="credit-person-name">Maneetpaul Singh</span>
     <span class="credit-person-role">Device Testing Sewa</span>
-    <span class="credit-person-note">Maneetpaul&#8217;s videos at youtube.com/@Maneetpaul inspired so many members of the Sangat &#8212; including this sewadar &#8212; to discover the e-ink reader. He very kindly gave his time and multiple devices to test this publication across hardware. Shukariya.</span>
+    <span class="credit-person-note">Maneetpaul&#8217;s videos inspired so many members of the Sangat &#8212; including this sewadar &#8212; to discover the e-ink reader. He very kindly gave his time to test this publication across his devices. Shukariya. youtube.com/@Maneetpaul</span>
   </div>
 
   <div class="credit-person">
@@ -116,7 +116,7 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
   </div>
 
   <div class="disclaimer">
-    <p>Every effort has been made to accurately represent the Gurbani. If you find an error, please write to 1guru.rakha@gmail.com</p>
+    <p>Every effort has been made to accurately represent the Gurbani. If you find an error, the sewadar asks for forgiveness and requests you to kindly inform 1guru.rakha@gmail.com.</p>
     <p class="bhul-chuk" lang="pa" xml:lang="pa">ਭੁੱਲ ਚੁੱਕ ਮਾਫ਼</p>
   </div>
 </div>
