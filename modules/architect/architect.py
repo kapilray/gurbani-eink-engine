@@ -71,6 +71,30 @@ def _build_content_xhtml(pauris: list[dict]) -> str:
 </html>'''
 
 
+def _build_reader_note_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
+    return f'''<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Before You Begin</title>
+  <link rel="stylesheet" type="text/css" href="{css_href}"/>
+</head>
+<body>
+<div class="reader-note">
+  <p class="reader-note-ikonkar" lang="pa" xml:lang="pa">ੴ</p>
+  <p class="reader-note-heading">Before You Begin</p>
+  <p class="reader-note-body">This book uses the Tiro Gurmukhi font to ensure every word of Gurbani renders correctly &#8212; with all ligatures and vowel signs intact, at any font size.</p>
+  <p class="reader-note-body">Please take a moment to set your font to <strong>Publisher Default</strong> before starting paath:</p>
+  <p class="reader-note-device"><strong>Kindle:</strong> Tap the top of the screen &#8594; Aa &#8594; Font &#8594; Publisher Default</p>
+  <p class="reader-note-device"><strong>Kobo:</strong> Tap the centre of the screen &#8594; Aa &#8594; Font &#8594; Publisher Default</p>
+  <p class="reader-note-body">Once set, you may change font size freely at any time.</p>
+  <p class="reader-note-closing" lang="pa" xml:lang="pa">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ &#8212; ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਹਿ</p>
+</div>
+</body>
+</html>'''
+
+
 def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
     return f'''<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
@@ -190,6 +214,13 @@ def build_epub(
     content_ch.add_item(css_item)
     book.add_item(content_ch)
 
+    # Reader note chapter
+    note_xhtml = _build_reader_note_xhtml()
+    note_ch = epub.EpubHtml(title='Before You Begin', file_name='reader_note.xhtml', lang='en')
+    note_ch.content = note_xhtml.encode('utf-8')
+    note_ch.add_item(css_item)
+    book.add_item(note_ch)
+
     # Credits chapter
     credits_xhtml = _build_credits_xhtml()
     credits_ch = epub.EpubHtml(title='Contributions', file_name='credits.xhtml', lang='en')
@@ -202,11 +233,12 @@ def build_epub(
     book.add_item(epub.EpubNav())
 
     book.toc = (
-        epub.Link('japji_sahib.xhtml', 'ਜਪੁਜੀ ਸਾਹਿਬ', 'japji'),
-        epub.Link('credits.xhtml',     'Contributions',   'credits'),
+        epub.Link('reader_note.xhtml', 'Before You Begin', 'note'),
+        epub.Link('japji_sahib.xhtml', 'ਜਪੁਜੀ ਸਾਹਿਬ',     'japji'),
+        epub.Link('credits.xhtml',     'Contributions',    'credits'),
     )
-    # Spine: cover first, then content, then credits. Nav is not a reading document.
-    book.spine = ['cover', content_ch, credits_ch]
+    # Spine: cover → reader note → content → credits. Nav is not a reading document.
+    book.spine = ['cover', note_ch, content_ch, credits_ch]
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     epub.write_epub(output_path, book, {})

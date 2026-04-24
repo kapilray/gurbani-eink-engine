@@ -1,6 +1,10 @@
 @font-face {
     font-family: 'TiroGurmukhi';
     src: url('../fonts/TiroGurmukhi-Regular.ttf') format('truetype');
+    /* Scope to Gurmukhi block + Devanagari dandas (॥) used in Gurbani —
+       so even if the user overrides body font, Gurmukhi characters
+       still draw from this face rather than falling back to a system font. */
+    unicode-range: U+0A00-U+0A7F, U+0964-U+0965;
 }
 
 body {
@@ -56,6 +60,45 @@ body {
 /* ── Paragraph break after salok / before first pauri body ── */
 .pauri-start {
     margin-top: 1.8em;
+}
+
+/* ── Reader note page ───────────────────────────────────── */
+.reader-note {
+    text-align: left;
+    font-size: 0.85em;
+    padding-top: 1em;
+}
+
+.reader-note-ikonkar {
+    text-align: center;
+    font-size: 2.2em;
+    line-height: 1.3;
+    margin-bottom: 0.3em;
+}
+
+.reader-note-heading {
+    font-size: 1.1em;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.8em;
+}
+
+.reader-note-body {
+    line-height: 1.6;
+    margin-bottom: 0.6em;
+}
+
+.reader-note-device {
+    margin-bottom: 0.4em;
+    line-height: 1.5;
+    padding-left: 0.5em;
+}
+
+.reader-note-closing {
+    margin-top: 1.4em;
+    font-size: 1em;
+    text-align: center;
+    line-height: 1.6;
 }
 
 /* ── Credits page ────────────────────────────────────────── */
