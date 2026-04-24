@@ -12,10 +12,13 @@ body {
     text-align: center;
 }
 
-/* Apply TiroGurmukhi only to Gurmukhi-language elements.
-   This prevents the Kobo "missing letters" dialog caused by
-   TiroGurmukhi not having full Latin glyph coverage. */
-:lang(pa) {
+/* Apply TiroGurmukhi to Gurmukhi content classes only.
+   Class-based selectors work on all EPUB renderers (Kobo ADE does not
+   honour CSS :lang() selectors). Latin text in credits/titles stays in
+   system serif, preventing the Kobo "missing letters" dialog. */
+.ikonkar, .manglacharan, .sirlekh, .rahao, .pankti, .word,
+.reader-note-ikonkar, .reader-note-closing,
+.credits-ikonkar, .credits-invocation, .bhul-chuk {
     font-family: 'TiroGurmukhi', serif;
 }
 
@@ -28,13 +31,13 @@ body {
 /* ── Line types ──────────────────────────────────────────── */
 .line {
     margin: 0.15em 0;
-    padding-top: 0.6em;
+    padding-top: 1.2em;
     overflow: visible;
 }
 
 .ikonkar {
     font-size: 2em;
-    line-height: 1.4;
+    line-height: 2.0;
     margin-bottom: 0.3em;
 }
 
