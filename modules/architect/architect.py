@@ -88,26 +88,29 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
 
   <div class="credit-person">
     <span class="credit-person-name">Ravina Toor</span>
+    <span class="credit-person-link">ravinartoor.com</span>
     <span class="credit-person-role">Cover Art <em>(permission pending)</em></span>
-    <span class="credit-person-note">ravinartoor.com</span>
   </div>
 
   <div class="credit-person">
     <span class="credit-person-name">Maneetpaul Singh</span>
+    <span class="credit-person-link">youtube.com/@Maneetpaul</span>
     <span class="credit-person-role">Device Testing Sewa</span>
-    <span class="credit-person-note">Maneetpaul&#8217;s videos inspired so many members of the Sangat &#8212; including this sewadar &#8212; to discover the e-ink reader. He very kindly gave his time to test this publication across his devices. Shukariya. youtube.com/@Maneetpaul</span>
+    <span class="credit-person-note">Maneetpaul&#8217;s videos inspired so many members of the Sangat &#8212; including this sewadar &#8212; to discover the e-ink reader. He very kindly gave his time to test this publication across his devices. Shukariya.</span>
   </div>
 
   <div class="credit-person">
     <span class="credit-person-name">Shabad OS</span>
+    <span class="credit-person-link">shabados.com</span>
     <span class="credit-person-role">Open Gurbani Database</span>
-    <span class="credit-person-note">The contributors behind Shabad OS &#8212; including harjot1singh, bhajneet, saihaj, and the wider open-source community &#8212; built the versioned, meticulously maintained Gurbani database this engine is built upon. Their dedication to making Gurbani digitally accessible is seva at its finest. shabados.com</span>
+    <span class="credit-person-note">The contributors behind Shabad OS &#8212; including harjot1singh, bhajneet, saihaj, and the wider open-source community &#8212; built the versioned, meticulously maintained Gurbani database this engine is built upon. Their dedication to making Gurbani digitally accessible is seva at its finest.</span>
   </div>
 
   <div class="credit-person">
     <span class="credit-person-name">Khalis Foundation</span>
+    <span class="credit-person-link">khalisfoundation.org</span>
     <span class="credit-person-role">Two Decades of Digital Sewa</span>
-    <span class="credit-person-note">For over 20 years, the Khalis Foundation has quietly and persistently built the digital infrastructure that lets projects like this one exist &#8212; from BaniDB to tools that bring Gurbani to contemporary Sikh life. Their work is the ground this project stands on. khalisfoundation.org</span>
+    <span class="credit-person-note">For over 20 years, the Khalis Foundation has quietly and persistently built the digital infrastructure that lets projects like this one exist &#8212; from BaniDB to tools that bring Gurbani to contemporary Sikh life. Their work is the ground this project stands on.</span>
   </div>
 
   <div class="credits-technical">

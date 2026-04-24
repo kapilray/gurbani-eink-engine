@@ -102,13 +102,20 @@ body {
     color: #111;
 }
 
+.credit-person-link {
+    display: block;
+    font-size: 0.85em;
+    color: #5a4030;
+    margin-top: 0.05em;
+}
+
 .credit-person-role {
     display: block;
     font-size: 0.8em;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: #888;
-    margin-top: 0.1em;
+    margin-top: 0.15em;
 }
 
 .credit-person-note {
