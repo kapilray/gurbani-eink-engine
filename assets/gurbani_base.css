@@ -1,10 +1,6 @@
 @font-face {
     font-family: 'TiroGurmukhi';
     src: url('../fonts/TiroGurmukhi-Regular.ttf') format('truetype');
-    /* Scope to Gurmukhi block + Devanagari dandas (॥) used in Gurbani —
-       so even if the user overrides body font, Gurmukhi characters
-       still draw from this face rather than falling back to a system font. */
-    unicode-range: U+0A00-U+0A7F, U+0964-U+0965;
 }
 
 body {
