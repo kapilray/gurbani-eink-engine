@@ -5,8 +5,8 @@
 
 body {
     font-family: 'TiroGurmukhi', serif;
-    line-height: 2.2;
-    padding: 1.5em 1.2em;
+    line-height: 2.6;
+    padding: 3em 1.2em 1.5em;
     background: #fff;
     color: #111;
     text-align: center;
@@ -15,12 +15,14 @@ body {
 /* ── Pauri block ─────────────────────────────────────────── */
 .pauri {
     margin-bottom: 2em;
+    overflow: visible;
 }
 
 /* ── Line types ──────────────────────────────────────────── */
 .line {
     margin: 0.15em 0;
-    padding-top: 0.25em;
+    padding-top: 0.6em;
+    overflow: visible;
 }
 
 .ikonkar {
