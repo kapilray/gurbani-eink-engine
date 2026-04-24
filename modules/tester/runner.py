@@ -17,6 +17,7 @@ class Scenario:
     description: str
     css_override: str
     font_scale: float = 1.0
+    target: str = 'content'  # 'content' or 'nav'
 
 
 SCENARIOS = [
@@ -52,13 +53,30 @@ SCENARIOS = [
         font_scale=1.0,
     ),
     Scenario(
-        slug='font_override',
-        name='Font Override (Publisher Default Lock)',
-        description='Forces system sans-serif — reveals exactly what breaks without embedded TiroGurmukhi',
+        slug='font_system_sans',
+        name='Font Override — Sans-serif',
+        description='Forces Helvetica/Arial — reveals what breaks without embedded TiroGurmukhi (sans fallback)',
         css_override='''
             * { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important; }
         ''',
         font_scale=1.0,
+    ),
+    Scenario(
+        slug='font_system_serif',
+        name='Font Override — Serif',
+        description='Forces Times New Roman/Georgia — reveals what breaks without embedded TiroGurmukhi (serif fallback)',
+        css_override='''
+            * { font-family: "Times New Roman", Times, Georgia, serif !important; }
+        ''',
+        font_scale=1.0,
+    ),
+    Scenario(
+        slug='chapter_nav',
+        name='Chapter Navigation (TOC)',
+        description='Renders nav.xhtml — shows how Gurmukhi and English chapter names display in reader navigation',
+        css_override='',
+        font_scale=1.0,
+        target='nav',
     ),
 ]
 
@@ -75,6 +93,14 @@ def extract_epub(epub_path: str, extract_dir: str) -> str:
             if f.endswith('.xhtml') and f not in skip:
                 return os.path.join(root, f)
     raise FileNotFoundError('No content XHTML found in EPUB')
+
+
+def _find_nav(extract_dir: str) -> str | None:
+    for root, _, files in os.walk(extract_dir):
+        for f in files:
+            if f == 'nav.xhtml':
+                return os.path.join(root, f)
+    return None
 
 
 def _device_css(device: DeviceProfile, scenario: Scenario) -> str:
@@ -145,9 +171,11 @@ def render_all(
     if scenarios is None:
         scenarios = SCENARIOS
 
-    extract_dir = os.path.join(version_dir, '_epub_extracted')
-    xhtml_path = extract_epub(epub_path, extract_dir)
-    file_url   = Path(xhtml_path).as_uri()
+    extract_dir  = os.path.join(version_dir, '_epub_extracted')
+    content_path = extract_epub(epub_path, extract_dir)
+    nav_path     = _find_nav(extract_dir)
+    content_url  = Path(content_path).as_uri()
+    nav_url      = Path(nav_path).as_uri() if nav_path else content_url
 
     results = []
     with sync_playwright() as p:
@@ -156,9 +184,10 @@ def render_all(
 
         for device in devices:
             for scenario in scenarios:
+                url = nav_url if scenario.target == 'nav' else content_url
                 shot_dir = os.path.join(version_dir, device.slug, scenario.slug)
                 os.makedirs(shot_dir, exist_ok=True)
-                shots = _render_device(page, device, scenario, file_url, shot_dir)
+                shots = _render_device(page, device, scenario, url, shot_dir)
                 results.append((device.name, scenario.slug, shots))
 
         browser.close()
