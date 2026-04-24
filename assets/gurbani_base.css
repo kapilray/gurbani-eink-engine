@@ -58,6 +58,7 @@ body {
 /* ── Credits page ────────────────────────────────────────── */
 .credits-page {
     text-align: left;
+    font-size: 0.82em;
 }
 
 .credits-heading {
@@ -67,7 +68,6 @@ body {
     border-bottom: 1px solid #aaa;
     padding-bottom: 0.4em;
     margin-bottom: 1.6em;
-    font-family: serif;
     color: #333;
 }
 
@@ -76,18 +76,16 @@ body {
 }
 
 .credit-label {
-    font-size: 0.72em;
+    font-size: 0.82em;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #888;
     display: block;
-    font-family: serif;
 }
 
 .credit-value {
     font-size: 1em;
     color: #111;
-    font-family: serif;
 }
 
 .credit-value a {
@@ -99,8 +97,7 @@ body {
     margin-top: 2.5em;
     padding-top: 1.2em;
     border-top: 1px solid #ddd;
-    font-family: serif;
-    font-size: 0.82em;
+    font-size: 0.9em;
     color: #555;
     line-height: 1.6;
 }
@@ -115,8 +112,7 @@ body {
 }
 
 .bhul-chuk {
-    font-family: 'TiroGurmukhi', serif;
-    font-size: 1.1em;
+    font-size: 1.15em;
     color: #333;
     margin-top: 1em;
 }

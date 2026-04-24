@@ -76,7 +76,17 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
   </div>
 
   <div class="credit-row">
-    <span class="credit-label">Gurbani Source</span>
+    <span class="credit-label">Scripture</span>
+    <span class="credit-value">Sri Guru Granth Sahib Ji — Ang 1–8</span>
+  </div>
+
+  <div class="credit-row">
+    <span class="credit-label">Primary Print Source</span>
+    <span class="credit-value">Shabadaarth Sri Guru Granth Sahib Ji (Vols. 1–4), SGPC, Sri Amritsar, 2009–2012</span>
+  </div>
+
+  <div class="credit-row">
+    <span class="credit-label">Digital Source</span>
     <span class="credit-value">Shabad OS Database v4.8.7 — <a href="https://github.com/shabados/database">github.com/shabados/database</a></span>
   </div>
 
@@ -86,17 +96,12 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
   </div>
 
   <div class="credit-row">
-    <span class="credit-label">Source Text</span>
-    <span class="credit-value">Sri Guru Granth Sahib Ji — Public Domain</span>
-  </div>
-
-  <div class="credit-row">
     <span class="credit-label">Development</span>
     <span class="credit-value">Gurbani-EInk Engine</span>
   </div>
 
   <div class="disclaimer">
-    <p>Every effort has been made to accurately represent the Gurbani text in this publication. The source is the Shabad OS Database v4.8.7, an open, versioned, community-maintained database of Gurbani — the most authoritative digital source available.</p>
+    <p>Every effort has been made to accurately represent the Gurbani text in this publication. The text follows the Shabadaarth Sri Guru Granth Sahib Ji (SGPC, 2009–2012) as digitised in the Shabad OS Database v4.8.7 — the most authoritative open digital source of Gurbani available.</p>
     <p>If you find an error or rendering issue, please write to <a href="mailto:1guru.rakha@gmail.com">1guru.rakha@gmail.com</a></p>
     <p class="bhul-chuk" lang="pa" xml:lang="pa">ਭੁੱਲ ਚੁੱਕ ਮਾਫ਼</p>
   </div>
