@@ -61,45 +61,75 @@ body {
     font-size: 0.82em;
 }
 
+.credits-invocation {
+    font-size: 1.15em;
+    color: #444;
+    margin-bottom: 0.8em;
+}
+
 .credits-heading {
-    font-size: 1.1em;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    border-bottom: 1px solid #aaa;
-    padding-bottom: 0.4em;
-    margin-bottom: 1.6em;
-    color: #333;
-}
-
-.credit-row {
-    margin-bottom: 1em;
-}
-
-.credit-label {
-    font-size: 0.82em;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #888;
-    display: block;
-}
-
-.credit-value {
     font-size: 1em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #bbb;
+    padding-bottom: 0.3em;
+    margin-bottom: 1.2em;
+    color: #555;
+}
+
+.credit-person {
+    margin-bottom: 1.1em;
+}
+
+.credit-person-name {
+    display: block;
+    font-size: 1em;
+    font-weight: bold;
     color: #111;
 }
 
-.credit-value a {
+.credit-person-role {
+    display: block;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888;
+    margin-top: 0.1em;
+}
+
+.credit-person-note {
+    display: block;
+    font-size: 0.95em;
+    color: #444;
+    line-height: 1.5;
+    margin-top: 0.25em;
+}
+
+.credit-person-note a, .credits-technical a {
     color: #5a4030;
     text-decoration: none;
 }
 
-.disclaimer {
-    margin-top: 2.5em;
-    padding-top: 1.2em;
-    border-top: 1px solid #ddd;
-    font-size: 0.9em;
+.credits-technical {
+    margin-top: 1.4em;
+    padding-top: 0.9em;
+    border-top: 1px solid #e0e0e0;
+    font-size: 0.88em;
     color: #555;
-    line-height: 1.6;
+    line-height: 1.55;
+}
+
+.credits-technical p {
+    margin-bottom: 0.4em;
+}
+
+.disclaimer {
+    margin-top: 1.4em;
+    padding-top: 0.9em;
+    border-top: 1px solid #e0e0e0;
+    font-size: 0.88em;
+    color: #666;
+    line-height: 1.55;
 }
 
 .disclaimer a {
@@ -108,11 +138,11 @@ body {
 }
 
 .disclaimer p {
-    margin-bottom: 0.9em;
+    margin-bottom: 0.6em;
 }
 
 .bhul-chuk {
-    font-size: 1.15em;
+    font-size: 1.1em;
     color: #333;
-    margin-top: 1em;
+    margin-top: 0.8em;
 }

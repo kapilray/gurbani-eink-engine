@@ -63,46 +63,33 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta charset="utf-8"/>
-  <title>Contributions</title>
+  <title>Acknowledgements</title>
   <link rel="stylesheet" type="text/css" href="{css_href}"/>
 </head>
 <body>
 <div class="credits-page">
-  <p class="credits-heading">Contributions</p>
+  <p class="credits-invocation" lang="pa" xml:lang="pa">ੴ ਸਤਿਗੁਰ ਪ੍ਰਸਾਦਿ ॥</p>
+  <p class="credits-heading">Acknowledgements</p>
 
-  <div class="credit-row">
-    <span class="credit-label">Cover Art</span>
-    <span class="credit-value"><a href="https://ravinartoor.com">RAVINARTOOR</a> (permission pending)</span>
+  <div class="credit-person">
+    <span class="credit-person-name">Ravina Toor</span>
+    <span class="credit-person-role">Cover Art <em>(permission pending)</em></span>
+    <span class="credit-person-note"><a href="https://ravinartoor.com">ravinartoor.com</a></span>
   </div>
 
-  <div class="credit-row">
-    <span class="credit-label">Scripture</span>
-    <span class="credit-value">Sri Guru Granth Sahib Ji — Ang 1–8</span>
+  <div class="credit-person">
+    <span class="credit-person-name">Maneetpaul Singh</span>
+    <span class="credit-person-role">Device Testing Sewa</span>
+    <span class="credit-person-note">Maneetpaul&#8217;s videos on <a href="https://www.youtube.com/@Maneetpaul">@Maneetpaul</a> inspired so many members of the Sangat &#8212; including the creator of this project &#8212; to discover the peace of reading Gurbani on e-ink. He very kindly gave his time and devices to test this publication across hardware. Shukariya.</span>
   </div>
 
-  <div class="credit-row">
-    <span class="credit-label">Primary Print Source</span>
-    <span class="credit-value">Shabadaarth Sri Guru Granth Sahib Ji (Vols. 1–4), SGPC, Sri Amritsar, 2009–2012</span>
-  </div>
-
-  <div class="credit-row">
-    <span class="credit-label">Digital Source</span>
-    <span class="credit-value">Shabad OS Database v4.8.7 — <a href="https://github.com/shabados/database">github.com/shabados/database</a></span>
-  </div>
-
-  <div class="credit-row">
-    <span class="credit-label">Font</span>
-    <span class="credit-value">Tiro Gurmukhi — Tiro Typeworks (OFL)</span>
-  </div>
-
-  <div class="credit-row">
-    <span class="credit-label">Development</span>
-    <span class="credit-value">Gurbani-EInk Engine</span>
+  <div class="credits-technical">
+    <p><strong>Gurbani:</strong> Sri Guru Granth Sahib Ji, Ang 1&#8211;8 &#183; Shabadaarth SGGS (Vols. 1&#8211;4), SGPC, Sri Amritsar, 2009&#8211;2012 &#183; Shabad OS Database v4.8.7 &#8212; <a href="https://github.com/shabados/database">github.com/shabados/database</a></p>
+    <p><strong>Font:</strong> Tiro Gurmukhi &#8212; Tiro Typeworks (OFL)</p>
   </div>
 
   <div class="disclaimer">
-    <p>Every effort has been made to accurately represent the Gurbani text in this publication. The text follows the Shabadaarth Sri Guru Granth Sahib Ji (SGPC, 2009–2012) as digitised in the Shabad OS Database v4.8.7 — the most authoritative open digital source of Gurbani available.</p>
-    <p>If you find an error or rendering issue, please write to <a href="mailto:1guru.rakha@gmail.com">1guru.rakha@gmail.com</a></p>
+    <p>Every effort has been made to accurately represent the Gurbani. If you find an error, please write to <a href="mailto:1guru.rakha@gmail.com">1guru.rakha@gmail.com</a></p>
     <p class="bhul-chuk" lang="pa" xml:lang="pa">ਭੁੱਲ ਚੁੱਕ ਮਾਫ਼</p>
   </div>
 </div>
