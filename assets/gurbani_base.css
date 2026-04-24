@@ -1,0 +1,90 @@
+@font-face {
+    font-family: 'TiroGurmukhi';
+    src: url('../fonts/TiroGurmukhi-Regular.ttf') format('truetype');
+}
+
+body {
+    font-family: 'TiroGurmukhi', serif;
+    line-height: 1.9;
+    padding: 1.5em 1.2em;
+    background: #fff;
+    color: #111;
+    text-align: center;
+}
+
+/* ── Pauri block ─────────────────────────────────────────── */
+.pauri {
+    margin-bottom: 2em;
+}
+
+/* ── Line types ──────────────────────────────────────────── */
+.line {
+    margin: 0.15em 0;
+}
+
+.manglacharan {
+    font-size: 1.05em;
+    margin-bottom: 0.6em;
+}
+
+.sirlekh {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 0.4em;
+    letter-spacing: 0.02em;
+}
+
+.rahao {
+    font-style: italic;
+    color: #444;
+}
+
+.pankti {
+    font-size: 1em;
+}
+
+/* ── Word atomicity (reflow protection) ──────────────────── */
+.word {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+/* ── Credits page ────────────────────────────────────────── */
+.credits-page {
+    text-align: left;
+}
+
+.credits-heading {
+    font-size: 1.1em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #aaa;
+    padding-bottom: 0.4em;
+    margin-bottom: 1.6em;
+    font-family: serif;
+    color: #333;
+}
+
+.credit-row {
+    margin-bottom: 1em;
+}
+
+.credit-label {
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #888;
+    display: block;
+    font-family: serif;
+}
+
+.credit-value {
+    font-size: 1em;
+    color: #111;
+    font-family: serif;
+}
+
+.credit-value a {
+    color: #5a4030;
+    text-decoration: none;
+}

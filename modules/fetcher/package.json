@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@shabados/gurmukhi-utils": "^1.2.0",
+    "better-sqlite3": "^12.9.0"
+  }
+}
