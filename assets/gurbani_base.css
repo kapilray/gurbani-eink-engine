@@ -4,12 +4,19 @@
 }
 
 body {
-    font-family: 'TiroGurmukhi', serif;
+    font-family: serif;
     line-height: 2.6;
     padding: 3em 1.2em 1.5em;
     background: #fff;
     color: #111;
     text-align: center;
+}
+
+/* Apply TiroGurmukhi only to Gurmukhi-language elements.
+   This prevents the Kobo "missing letters" dialog caused by
+   TiroGurmukhi not having full Latin glyph coverage. */
+:lang(pa) {
+    font-family: 'TiroGurmukhi', serif;
 }
 
 /* ── Pauri block ─────────────────────────────────────────── */
