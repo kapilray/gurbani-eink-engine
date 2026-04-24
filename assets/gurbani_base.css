@@ -1,6 +1,15 @@
+@page {
+    margin-top: 1em;
+}
+
 @font-face {
     font-family: 'TiroGurmukhi';
     src: url('../fonts/TiroGurmukhi-Regular.ttf') format('truetype');
+    /* Declare only the code points this font is authoritative for — prevents
+       Kobo from triggering "missing letters" for Latin characters that fall
+       back to the system serif (even though TiroGurmukhi has 191 Latin glyphs,
+       restricting the declared range removes all ambiguity for Kobo's scanner) */
+    unicode-range: U+0964-U+0965, U+0A01-U+0A7F;
 }
 
 body {
@@ -18,7 +27,8 @@ body {
    system serif, preventing the Kobo "missing letters" dialog. */
 .ikonkar, .manglacharan, .sirlekh, .rahao, .pankti, .word,
 .reader-note-ikonkar, .reader-note-closing,
-.credits-ikonkar, .credits-invocation, .bhul-chuk {
+.credits-ikonkar, .credits-invocation, .bhul-chuk,
+.cover-ikonkar, .cover-title-pa {
     font-family: 'TiroGurmukhi', serif;
 }
 
@@ -28,23 +38,33 @@ body {
     overflow: visible;
 }
 
-/* ── Line types ──────────────────────────────────────────── */
-.line {
-    margin: 0.15em 0;
+/* ── Line wrapper ────────────────────────────────────────── */
+/* <div class="line-wrap"> surrounds each <p class="line">.
+   Kobo KEPUB honours page-break-inside:avoid more reliably on <div>
+   than on <p>. Moving break prevention + top padding here ensures
+   each line starts fresh on a page — no sihari/ascender clipping. */
+.line-wrap {
     padding-top: 1.2em;
     overflow: visible;
-    /* Prevent Kobo from splitting a line across pages — continuation
-       fragments lose padding-top, causing ascender (sihari) clipping */
     -webkit-column-break-inside: avoid;
     page-break-inside: avoid;
     break-inside: avoid;
 }
 
+.ikonkar-wrap {
+    padding-top: 0;
+}
+
+/* ── Line types ──────────────────────────────────────────── */
+.line {
+    margin: 0;
+    overflow: visible;
+}
+
 .ikonkar {
-    font-size: 2em;
+    font-size: 1.5em;
     line-height: 2.0;
     margin-bottom: 0.3em;
-    padding-top: 0;
 }
 
 .manglacharan {
@@ -224,4 +244,40 @@ body {
     font-size: 1.1em;
     color: #333;
     margin-top: 0.8em;
+}
+
+/* ── Cover page ──────────────────────────────────────────── */
+.cover-ikonkar, .cover-title-pa {
+    font-family: 'TiroGurmukhi', serif;
+}
+
+.cover-ikonkar {
+    font-size: 4em;
+    line-height: 1.6;
+    margin: 0 0 0.2em;
+}
+
+.cover-title-pa {
+    font-size: 1.6em;
+    line-height: 1.6;
+    margin-bottom: 0.15em;
+}
+
+.cover-title-en {
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 0.1em;
+}
+
+.cover-author {
+    font-size: 0.85em;
+    color: #888;
+    margin-bottom: 2em;
+}
+
+.cover-version {
+    font-size: 0.7em;
+    color: #bbb;
+    font-family: monospace;
+    margin-top: 2em;
 }

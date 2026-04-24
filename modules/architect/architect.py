@@ -1,7 +1,7 @@
 import io
 import os
 import re
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from ebooklib import epub
 from modules.shaper.shaper import atomic_shaper
 
@@ -14,13 +14,44 @@ def _read(path: str, mode='r', encoding='utf-8'):
         return f.read()
 
 
-def _cover_to_jpeg(cover_path: str, quality: int = 85) -> bytes:
-    with Image.open(cover_path) as img:
-        if img.mode not in ('RGB',):
-            img = img.convert('RGB')
-        buf = io.BytesIO()
-        img.save(buf, format='JPEG', quality=quality, optimize=True)
-        return buf.getvalue()
+def _generate_cover_image(version: str = '') -> bytes:
+    """Generate a simple text-based cover thumbnail (no artwork required)."""
+    W, H = 1200, 1800
+    img = Image.new('RGB', (W, H), '#ffffff')
+    draw = ImageDraw.Draw(img)
+
+    # Try to load a decent font; fall back to PIL built-in
+    try:
+        font_lg = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 120)
+        font_md = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 72)
+        font_sm = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 48)
+        font_xs = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 36)
+    except OSError:
+        font_lg = font_md = font_sm = font_xs = ImageFont.load_default()
+
+    def centred(text, y, font, color='#111111'):
+        bbox = draw.textbbox((0, 0), text, font=font)
+        x = (W - (bbox[2] - bbox[0])) // 2
+        draw.text((x, y), text, font=font, fill=color)
+        return bbox[3] - bbox[1]
+
+    # Thin top rule
+    draw.line([(120, 180), (W - 120, 180)], fill='#cccccc', width=3)
+
+    y = 260
+    centred('JAPJI SAHIB', y, font_lg)
+    y += 160
+    centred('Guru Nanak Dev Ji', y, font_md, '#555555')
+    y += 100
+    centred('Gurbani E-Ink Edition', y, font_sm, '#888888')
+
+    draw.line([(120, H - 220), (W - 120, H - 220)], fill='#cccccc', width=3)
+    if version:
+        centred(version, H - 190, font_xs, '#bbbbbb')
+
+    buf = io.BytesIO()
+    img.save(buf, format='JPEG', quality=85, optimize=True)
+    return buf.getvalue()
 
 
 _IK_ONKAR = 'ੴ'
@@ -39,10 +70,13 @@ def _build_content_xhtml(pauris: list[dict]) -> str:
 
             # Ik Onkar gets its own full line at 2× size for any Bani that opens with it
             if line_type == 'manglacharan' and text.startswith(_IK_ONKAR):
-                parts.append(f'  <p class="line ikonkar"><span class="word">{_IK_ONKAR}</span></p>')
+                # ikonkar-wrap overrides line-wrap's padding-top to 0 — body padding
+                # is sufficient on page 1, and if break-inside moves it to a new page
+                # the @page margin-top provides the ascender buffer
+                parts.append(f'  <div class="line-wrap ikonkar-wrap"><p class="line ikonkar"><span class="word">{_IK_ONKAR}</span></p></div>')
                 rest = text[len(_IK_ONKAR):].strip()
                 if rest:
-                    parts.append(f'  <p class="line manglacharan">{atomic_shaper(rest)}</p>')
+                    parts.append(f'  <div class="line-wrap"><p class="line manglacharan">{atomic_shaper(rest)}</p></div>')
                 prev_was_salok_end = False
             else:
                 # In a pauri with manglacharan, insert a visual break after the salok
@@ -50,7 +84,7 @@ def _build_content_xhtml(pauris: list[dict]) -> str:
                 extra_class = ''
                 if prev_was_salok_end and line_type == 'pankti' and has_manglacharan:
                     extra_class = ' pauri-start'
-                parts.append(f'  <p class="line {line_type}{extra_class}">{atomic_shaper(text)}</p>')
+                parts.append(f'  <div class="line-wrap"><p class="line {line_type}{extra_class}">{atomic_shaper(text)}</p></div>')
                 prev_was_salok_end = (line_type == 'pankti' and
                                       bool(re.search(r'॥\d+॥\s*$', text)))
 
@@ -153,15 +187,14 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
 
 def build_epub(
     pauris:      list[dict],
-    cover_path:  str,
     font_path:   str,
     css_path:    str,
     output_path: str,
+    version:     str = '',
 ) -> str:
     css_content = _read(css_path)
     font_bytes  = _read(font_path, mode='rb')
-    # Always embed cover as JPEG regardless of source format — keeps file size small
-    cover_bytes = _cover_to_jpeg(cover_path)
+    cover_bytes = _generate_cover_image(version)
 
     book = epub.EpubBook()
     book.set_identifier('japji-sahib-eink-001')
@@ -171,34 +204,20 @@ def build_epub(
     book.add_metadata('DC', 'description',
                       'The complete Japji Sahib in Unicode Gurmukhi, formatted for e-ink devices.')
 
-    # Cover image — register with create_page=False so ebooklib does NOT generate its
-    # own bare cover.xhtml (which renders partially on Kobo due to missing viewport CSS).
+    # Cover image thumbnail — registered first so ebooklib sets the cover metadata.
+    # create_page=False prevents ebooklib generating its own bare cover.xhtml.
     book.set_cover('images/cover.jpg', cover_bytes, create_page=False)
 
-    # Cover HTML — our own page with explicit viewport-filling CSS
-    cover_ch = epub.EpubHtml(uid='cover', title='Cover', file_name='cover.xhtml', lang='pa')
-    cover_ch.content = b'''<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pa" lang="pa">
-<head>
-  <meta charset="utf-8"/>
-  <title>Cover</title>
-</head>
-<body style="margin: 0; padding: 0;">
-  <img src="images/cover.jpg" alt="Cover" style="width: 100%; height: 100%; display: block;"/>
-</body>
-</html>'''
-    book.add_item(cover_ch)
-
-    # Font
+    # Font — media type application/vnd.ms-opentype is the most Kobo-compatible
+    # declaration for TTF/OTF fonts; avoids kepubify stripping the font item.
     book.add_item(epub.EpubItem(
         uid='font-tiro-regular',
         file_name='fonts/TiroGurmukhi-Regular.ttf',
-        media_type='font/ttf',
+        media_type='application/vnd.ms-opentype',
         content=font_bytes,
     ))
 
-    # CSS
+    # CSS — must be created before cover_ch so cover_ch.add_item() can reference it
     css_item = epub.EpubItem(
         uid='style-gurbani',
         file_name='styles/gurbani_base.css',
@@ -206,6 +225,28 @@ def build_epub(
         content=css_content.encode('utf-8'),
     )
     book.add_item(css_item)
+
+    # Cover HTML — text-based title page (no external artwork required).
+    # Links to gurbani_base.css so TiroGurmukhi is available for Gurmukhi text.
+    ver_line = f'\n  <p class="cover-version">v{version}</p>' if version else ''
+    cover_ch = epub.EpubHtml(uid='cover', title='Cover', file_name='cover.xhtml', lang='en')
+    cover_ch.content = f'''<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Japji Sahib</title>
+  <link rel="stylesheet" type="text/css" href="styles/gurbani_base.css"/>
+</head>
+<body style="text-align: center; padding: 3em 2em 2em;">
+  <p class="cover-ikonkar" lang="pa" xml:lang="pa">ੴ</p>
+  <p class="cover-title-pa" lang="pa" xml:lang="pa">ਜਪੁਜੀ ਸਾਹਿਬ</p>
+  <p class="cover-title-en">Japji Sahib</p>
+  <p class="cover-author">Guru Nanak Dev Ji</p>{ver_line}
+</body>
+</html>'''.encode('utf-8')
+    cover_ch.add_item(css_item)
+    book.add_item(cover_ch)
 
     # Content chapter
     content_xhtml = _build_content_xhtml(pauris)
