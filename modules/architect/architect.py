@@ -14,44 +14,30 @@ def _read(path: str, mode='r', encoding='utf-8'):
         return f.read()
 
 
-def _generate_cover_image(version: str = '') -> bytes:
-    """Generate a simple text-based cover thumbnail (no artwork required)."""
-    W, H = 1200, 1800
-    img = Image.new('RGB', (W, H), '#ffffff')
-    draw = ImageDraw.Draw(img)
-
-    # Try to load a decent font; fall back to PIL built-in
-    try:
-        font_lg = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 120)
-        font_md = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 72)
-        font_sm = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 48)
-        font_xs = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 36)
-    except OSError:
-        font_lg = font_md = font_sm = font_xs = ImageFont.load_default()
-
-    def centred(text, y, font, color='#111111'):
-        bbox = draw.textbbox((0, 0), text, font=font)
-        x = (W - (bbox[2] - bbox[0])) // 2
-        draw.text((x, y), text, font=font, fill=color)
-        return bbox[3] - bbox[1]
-
-    # Thin top rule
-    draw.line([(120, 180), (W - 120, 180)], fill='#cccccc', width=3)
-
-    y = 260
-    centred('JAPJI SAHIB', y, font_lg)
-    y += 160
-    centred('Guru Nanak Dev Ji', y, font_md, '#555555')
-    y += 100
-    centred('Gurbani E-Ink Edition', y, font_sm, '#888888')
-
-    draw.line([(120, H - 220), (W - 120, H - 220)], fill='#cccccc', width=3)
-    if version:
-        centred(version, H - 190, font_xs, '#bbbbbb')
-
-    buf = io.BytesIO()
-    img.save(buf, format='JPEG', quality=85, optimize=True)
-    return buf.getvalue()
+def _cover_to_jpeg(cover_path: str, version: str = '', quality: int = 85) -> bytes:
+    """Convert cover image to JPEG, optionally stamping a version string."""
+    with Image.open(cover_path) as img:
+        if img.mode not in ('RGB',):
+            img = img.convert('RGB')
+        if version:
+            draw = ImageDraw.Draw(img)
+            W, H = img.size
+            try:
+                font = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', max(18, H // 60))
+            except OSError:
+                font = ImageFont.load_default()
+            label = f'v{version}'
+            bbox = draw.textbbox((0, 0), label, font=font)
+            tw = bbox[2] - bbox[0]
+            th = bbox[3] - bbox[1]
+            pad = 12
+            x = W - tw - pad
+            y = H - th - pad
+            draw.rectangle([x - 4, y - 4, x + tw + 4, y + th + 4], fill='#000000aa')
+            draw.text((x, y), label, font=font, fill='#ffffff')
+        buf = io.BytesIO()
+        img.save(buf, format='JPEG', quality=quality, optimize=True)
+        return buf.getvalue()
 
 
 _IK_ONKAR = 'ੴ'
@@ -189,12 +175,13 @@ def build_epub(
     pauris:      list[dict],
     font_path:   str,
     css_path:    str,
+    cover_path:  str,
     output_path: str,
     version:     str = '',
 ) -> str:
     css_content = _read(css_path)
     font_bytes  = _read(font_path, mode='rb')
-    cover_bytes = _generate_cover_image(version)
+    cover_bytes = _cover_to_jpeg(cover_path, version)
 
     book = epub.EpubBook()
     book.set_identifier('japji-sahib-eink-001')
@@ -213,7 +200,7 @@ def build_epub(
     book.add_item(epub.EpubItem(
         uid='font-tiro-regular',
         file_name='fonts/TiroGurmukhi-Regular.ttf',
-        media_type='application/vnd.ms-opentype',
+        media_type='font/ttf',
         content=font_bytes,
     ))
 
@@ -226,26 +213,24 @@ def build_epub(
     )
     book.add_item(css_item)
 
-    # Cover HTML — text-based title page (no external artwork required).
-    # Links to gurbani_base.css so TiroGurmukhi is available for Gurmukhi text.
-    ver_line = f'\n  <p class="cover-version">v{version}</p>' if version else ''
+    # Cover HTML — full-bleed image cover.
+    ver_label = f' v{version}' if version else ''
     cover_ch = epub.EpubHtml(uid='cover', title='Cover', file_name='cover.xhtml', lang='en')
     cover_ch.content = f'''<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta charset="utf-8"/>
-  <title>Japji Sahib</title>
-  <link rel="stylesheet" type="text/css" href="styles/gurbani_base.css"/>
+  <title>Japji Sahib{ver_label}</title>
+  <style type="text/css">
+    body {{ margin: 0; padding: 0; background: #000; }}
+    img.cover {{ width: 100%; height: 100%; object-fit: contain; display: block; }}
+  </style>
 </head>
-<body style="text-align: center; padding: 3em 2em 2em;">
-  <p class="cover-ikonkar" lang="pa" xml:lang="pa">ੴ</p>
-  <p class="cover-title-pa" lang="pa" xml:lang="pa">ਜਪੁਜੀ ਸਾਹਿਬ</p>
-  <p class="cover-title-en">Japji Sahib</p>
-  <p class="cover-author">Guru Nanak Dev Ji</p>{ver_line}
+<body>
+  <img class="cover" src="images/cover.jpg" alt="Japji Sahib cover"/>
 </body>
 </html>'''.encode('utf-8')
-    cover_ch.add_item(css_item)
     book.add_item(cover_ch)
 
     # Content chapter
