@@ -3,6 +3,10 @@
     src: url('../fonts/TiroGurmukhi-Regular.ttf') format('truetype');
 }
 
+@page {
+    margin-top: 48px;
+}
+
 body {
     font-family: serif;
     line-height: 2.6;
