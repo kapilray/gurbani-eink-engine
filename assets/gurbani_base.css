@@ -39,7 +39,11 @@ body {
    than on <p>. Moving break prevention + top padding here ensures
    each line starts fresh on a page — no sihari/ascender clipping. */
 .line-wrap {
-    padding-top: 1.2em;
+    /* border-top instead of padding-top: Kobo KEPUB strips padding-top from the
+       first block element on each new page, causing lagaan (sihari ਿ, bihari ੀ,
+       dulavaa ੈ…) that extend 0.13–0.16em above the hhea ascender to clip.
+       border-top is a different box model property and survives the strip. */
+    border-top: 0.25em solid transparent;
     overflow: visible;
     -webkit-column-break-inside: avoid;
     page-break-inside: avoid;
