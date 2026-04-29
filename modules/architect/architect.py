@@ -223,8 +223,9 @@ def build_epub(
   <meta charset="utf-8"/>
   <title>Japji Sahib{ver_label}</title>
   <style type="text/css">
+    @page {{ margin-top: 0; }}
     body {{ margin: 0; padding: 0; background: #000; }}
-    img.cover {{ width: 100%; height: 100%; object-fit: contain; display: block; }}
+    img.cover {{ width: 100%; height: auto; display: block; }}
   </style>
 </head>
 <body>

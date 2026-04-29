@@ -20,7 +20,7 @@ body {
    Class-based selectors work on all EPUB renderers (Kobo ADE does not
    honour CSS :lang() selectors). Latin text in credits/titles stays in
    system serif, preventing the Kobo "missing letters" dialog. */
-.ikonkar, .manglacharan, .sirlekh, .rahao, .pankti, .word,
+.ikonkar, .manglacharan, .sirlekh, .rahao, .pankti, .word, .g,
 .reader-note-ikonkar, .reader-note-closing,
 .credits-ikonkar, .credits-invocation, .bhul-chuk,
 .cover-ikonkar, .cover-title-pa {
@@ -79,6 +79,17 @@ body {
 
 .pankti {
     font-size: 1em;
+}
+
+/* ── Grapheme cluster atomicity ──────────────────────────── */
+/* .g wraps one base consonant + all its combining marks (sihari, bihari,
+   hora, tippi…). kepubify (djazz.se KEPUB conversion) injects koboSpan
+   elements around text nodes; .g ensures it can only split BETWEEN clusters,
+   never inside one — keeping combining marks attached to their base. */
+.g {
+    display: inline;
+    white-space: nowrap;
+    overflow-wrap: normal;
 }
 
 /* ── Word atomicity (reflow protection) ──────────────────── */
