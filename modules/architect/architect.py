@@ -3,7 +3,26 @@ import os
 import re
 from PIL import Image, ImageDraw, ImageFont
 from ebooklib import epub
+from fontTools.ttLib import TTFont
 from modules.shaper.shaper import atomic_shaper
+
+
+# Highest lagaan yMax in TiroGurmukhi: dulavaa ੈ = 918u.
+# hhea.ascent and OS/2.sTypoAscender are both 755u — too small, causing all
+# lagaan (sihari, bihari, dulavaa…) to extend above the content area and get
+# clipped at page tops on Kobo KEPUB regardless of CSS padding/border tricks.
+# Patching to 930u puts all lagaan safely inside the content area.
+_PATCHED_ASCENT = 930
+
+def _patch_font(font_path: str) -> bytes:
+    """Return font bytes with hhea.ascent and OS/2.sTypoAscender raised to
+    _PATCHED_ASCENT so all Gurmukhi lagaan fit within the renderer content area."""
+    font = TTFont(font_path)
+    font['hhea'].ascent = _PATCHED_ASCENT
+    font['OS/2'].sTypoAscender = _PATCHED_ASCENT
+    buf = io.BytesIO()
+    font.save(buf)
+    return buf.getvalue()
 
 
 def _read(path: str, mode='r', encoding='utf-8'):
@@ -180,7 +199,7 @@ def build_epub(
     version:     str = '',
 ) -> str:
     css_content = _read(css_path)
-    font_bytes  = _read(font_path, mode='rb')
+    font_bytes  = _patch_font(font_path)
     cover_bytes = _cover_to_jpeg(cover_path, version)
 
     book = epub.EpubBook()

@@ -104,11 +104,11 @@ body {
    word is wider than the viewport at large font sizes. */
 .word {
     display: inline;
-    white-space: nowrap;
-    overflow-wrap: normal;
-    word-break: normal;
-    -webkit-hyphens: none;
-    hyphens: none;
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    -webkit-hyphens: none !important;
+    hyphens: none !important;
 }
 
 /* ── Paragraph break after salok / before first pauri body ── */
