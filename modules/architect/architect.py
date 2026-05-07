@@ -222,11 +222,12 @@ def build_epub(
     )
     book.add_item(css_item)
 
-    # Cover HTML — SVG wrapper scales the image to fill the viewport exactly
-    # on any screen size/aspect ratio without splitting across pages.
+    # Cover — use EpubItem (not EpubHtml) so ebooklib does not reserialise the
+    # content via lxml's HTML parser, which would lowercase SVG attribute names
+    # (viewBox → viewbox, preserveAspectRatio → preserveaspectratio) and strip
+    # the <style> tag.  Raw bytes are written to the EPUB zip unchanged.
     ver_label = f' v{version}' if version else ''
-    cover_ch = epub.EpubHtml(uid='cover', title='Cover', file_name='cover.xhtml', lang='en')
-    cover_ch.content = f'''<?xml version="1.0" encoding="utf-8"?>
+    cover_bytes_xhtml = f'''<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -248,6 +249,12 @@ def build_epub(
 </svg>
 </body>
 </html>'''.encode('utf-8')
+    cover_ch = epub.EpubItem(
+        uid='cover',
+        file_name='cover.xhtml',
+        media_type='application/xhtml+xml',
+        content=cover_bytes_xhtml,
+    )
     book.add_item(cover_ch)
 
     # Content chapter

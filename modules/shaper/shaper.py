@@ -2,8 +2,8 @@ import unicodedata
 
 _COMBINING = frozenset({'Mn', 'Mc', 'Me'})
 
-
 _GURMUKHI_VIRAMA = '੍'  # U+0A4D — virama binds the following consonant into a conjunct
+_SOFT_HYPHEN     = '­'  # U+00AD — invisible at normal sizes, shows as '-' at break point
 
 def _grapheme_clusters(word: str) -> list[str]:
     """Split a word into grapheme clusters: each base letter + all its combining marks.
@@ -35,15 +35,13 @@ def atomic_shaper(text: str) -> str:
     Gurmukhi combining marks (sihari, bihari, hora …) from their base consonants:
     - Inner .g spans: each span is one complete grapheme cluster — kepubify can
       only split between .g spans, never inside one
-    - Outer .word spans: white-space: nowrap prevents line breaks between clusters
-      within a word
+    - Outer .word spans: hyphens: manual allows breaks only at the soft hyphens
+      between clusters, never mid-cluster
     """
     normalized = unicodedata.normalize('NFC', text)
     parts: list[str] = []
     for word in normalized.split():
         clusters = _grapheme_clusters(word)
-        # Soft hyphen (U+00AD) between clusters: invisible at normal sizes,
-        # renders as '-' at the break point when the word overflows the viewport.
-        inner = '­'.join(f'<span class="g">{c}</span>' for c in clusters)
+        inner = _SOFT_HYPHEN.join(f'<span class="g">{c}</span>' for c in clusters)
         parts.append(f'<span class="word">{inner}</span>')
     return ' '.join(parts)
