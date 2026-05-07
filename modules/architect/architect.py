@@ -3,26 +3,7 @@ import os
 import re
 from PIL import Image, ImageDraw, ImageFont
 from ebooklib import epub
-from fontTools.ttLib import TTFont
 from modules.shaper.shaper import atomic_shaper
-
-
-# Highest lagaan yMax in TiroGurmukhi: dulavaa ੈ = 918u.
-# hhea.ascent and OS/2.sTypoAscender are both 755u — too small, causing all
-# lagaan (sihari, bihari, dulavaa…) to extend above the content area and get
-# clipped at page tops on Kobo KEPUB regardless of CSS padding/border tricks.
-# Patching to 930u puts all lagaan safely inside the content area.
-_PATCHED_ASCENT = 930
-
-def _patch_font(font_path: str) -> bytes:
-    """Return font bytes with hhea.ascent and OS/2.sTypoAscender raised to
-    _PATCHED_ASCENT so all Gurmukhi lagaan fit within the renderer content area."""
-    font = TTFont(font_path)
-    font['hhea'].ascent = _PATCHED_ASCENT
-    font['OS/2'].sTypoAscender = _PATCHED_ASCENT
-    buf = io.BytesIO()
-    font.save(buf)
-    return buf.getvalue()
 
 
 def _read(path: str, mode='r', encoding='utf-8'):
@@ -199,8 +180,10 @@ def build_epub(
     version:     str = '',
 ) -> str:
     css_content = _read(css_path)
-    font_bytes  = _patch_font(font_path)
+    font_bytes  = _read(font_path, mode='rb')
     cover_bytes = _cover_to_jpeg(cover_path, version)
+    with Image.open(cover_path) as _cimg:
+        cover_w, cover_h = _cimg.size
 
     book = epub.EpubBook()
     book.set_identifier('japji-sahib-eink-001')
@@ -214,13 +197,20 @@ def build_epub(
     # create_page=False prevents ebooklib generating its own bare cover.xhtml.
     book.set_cover('images/cover.jpg', cover_bytes, create_page=False)
 
-    # Font — media type application/vnd.ms-opentype is the most Kobo-compatible
-    # declaration for TTF/OTF fonts; avoids kepubify stripping the font item.
     book.add_item(epub.EpubItem(
-        uid='font-tiro-regular',
-        file_name='fonts/TiroGurmukhi-Regular.ttf',
+        uid='font-gurmukhi-regular',
+        file_name='fonts/NotoSansGurmukhi-Regular.ttf',
         media_type='font/ttf',
         content=font_bytes,
+    ))
+    book.add_item(epub.EpubItem(
+        uid='font-tiro-ikonkar',
+        file_name='fonts/TiroGurmukhi-Regular.ttf',
+        media_type='font/ttf',
+        content=_read(
+            os.path.join(os.path.dirname(font_path), 'TiroGurmukhi-Regular.ttf'),
+            mode='rb',
+        ),
     ))
 
     # CSS — must be created before cover_ch so cover_ch.add_item() can reference it
@@ -232,7 +222,8 @@ def build_epub(
     )
     book.add_item(css_item)
 
-    # Cover HTML — full-bleed image cover.
+    # Cover HTML — SVG wrapper scales the image to fill the viewport exactly
+    # on any screen size/aspect ratio without splitting across pages.
     ver_label = f' v{version}' if version else ''
     cover_ch = epub.EpubHtml(uid='cover', title='Cover', file_name='cover.xhtml', lang='en')
     cover_ch.content = f'''<?xml version="1.0" encoding="utf-8"?>
@@ -242,13 +233,19 @@ def build_epub(
   <meta charset="utf-8"/>
   <title>Japji Sahib{ver_label}</title>
   <style type="text/css">
-    @page {{ margin-top: 0; }}
-    body {{ margin: 0; padding: 0; background: #000; }}
-    img.cover {{ width: 100%; height: auto; display: block; }}
+    @page {{ margin: 0; }}
+    html, body {{ margin: 0; padding: 0; width: 100%; height: 100%; }}
+    svg {{ display: block; width: 100%; height: 100%; }}
   </style>
 </head>
 <body>
-  <img class="cover" src="images/cover.jpg" alt="Japji Sahib cover"/>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1" width="100%" height="100%"
+     viewBox="0 0 {cover_w} {cover_h}"
+     preserveAspectRatio="xMidYMid meet">
+  <image width="{cover_w}" height="{cover_h}" xlink:href="images/cover.jpg"/>
+</svg>
 </body>
 </html>'''.encode('utf-8')
     book.add_item(cover_ch)

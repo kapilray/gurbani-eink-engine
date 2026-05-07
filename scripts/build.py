@@ -7,7 +7,7 @@ sys.path.insert(0, ROOT)
 from modules.fetcher.fetcher import load_japji
 from modules.architect.architect import build_epub
 
-FONT_PATH   = os.path.join(ROOT, 'assets', 'fonts', 'TiroGurmukhi-Regular.ttf')
+FONT_PATH   = os.path.join(ROOT, 'assets', 'fonts', 'NotoSansGurmukhi-Regular.ttf')
 CSS_PATH    = os.path.join(ROOT, 'assets', 'gurbani_base.css')
 COVER_PATH  = os.path.join(ROOT, 'assets', 'branding', 'cover_color.png')
 OUTPUT_PATH = os.path.join(ROOT, 'output', 'Japji_Sahib.epub')

@@ -1,5 +1,14 @@
 @font-face {
     font-family: 'TiroGurmukhi';
+    src: url('../fonts/NotoSansGurmukhi-Regular.ttf') format('truetype');
+}
+
+/* TiroGurmukhi used only for the Ik Onkar glyph ੴ (U+0A74).
+   NotoSansGurmukhi's ekonkarguru path is too complex for Kobo Clara Color's
+   rasterizer at large user font sizes — it renders as a hatched box.
+   TiroGurmukhi's ੴ is a simpler outline and survives the same sizes fine. */
+@font-face {
+    font-family: 'TiroIkonkar';
     src: url('../fonts/TiroGurmukhi-Regular.ttf') format('truetype');
 }
 
@@ -16,15 +25,22 @@ body {
     text-align: center;
 }
 
-/* Apply TiroGurmukhi to Gurmukhi content classes only.
+/* Apply NotoSansGurmukhi to all Gurmukhi content.
    Class-based selectors work on all EPUB renderers (Kobo ADE does not
    honour CSS :lang() selectors). Latin text in credits/titles stays in
    system serif, preventing the Kobo "missing letters" dialog. */
-.ikonkar, .manglacharan, .sirlekh, .rahao, .pankti, .word, .g,
-.reader-note-ikonkar, .reader-note-closing,
-.credits-ikonkar, .credits-invocation, .bhul-chuk,
-.cover-ikonkar, .cover-title-pa {
+.manglacharan, .sirlekh, .rahao, .pankti, .word, .g,
+.reader-note-closing,
+.credits-invocation, .bhul-chuk,
+.cover-title-pa {
     font-family: 'TiroGurmukhi', serif;
+}
+
+/* Ik Onkar ੴ uses TiroGurmukhi — simpler glyph path survives Kobo Clara
+   Color's rasterizer at maximum user font size; NotoSansGurmukhi's version
+   renders as a hatched box on Clara at large sizes. */
+.ikonkar, .reader-note-ikonkar, .credits-ikonkar, .cover-ikonkar {
+    font-family: 'TiroIkonkar', serif;
 }
 
 /* ── Pauri block ─────────────────────────────────────────── */
@@ -97,18 +113,14 @@ body {
 }
 
 /* ── Word atomicity (reflow protection) ──────────────────── */
-/* inline (not inline-block) so combining marks like sihari (ਿ) that
-   extend leftward of their consonant are never clipped by a box boundary.
-   overflow-wrap: normal overrides Kobo's UA word-wrap: break-word, which
-   otherwise splits Gurmukhi words at Unicode syllable boundaries when the
-   word is wider than the viewport at large font sizes. */
+/* Soft hyphens (U+00AD) inserted between .g spans in the shaper give the
+   renderer explicit break points. hyphens: manual means the renderer only
+   breaks at those positions and shows a '-' there; it never breaks mid-cluster.
+   At normal font sizes no break occurs and the soft hyphens are invisible. */
 .word {
     display: inline;
-    white-space: nowrap !important;
-    overflow-wrap: normal !important;
-    word-break: normal !important;
-    -webkit-hyphens: none !important;
-    hyphens: none !important;
+    -webkit-hyphens: manual;
+    hyphens: manual;
 }
 
 /* ── Paragraph break after salok / before first pauri body ── */

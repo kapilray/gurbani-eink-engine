@@ -42,6 +42,8 @@ def atomic_shaper(text: str) -> str:
     parts: list[str] = []
     for word in normalized.split():
         clusters = _grapheme_clusters(word)
-        inner = ''.join(f'<span class="g">{c}</span>' for c in clusters)
+        # Soft hyphen (U+00AD) between clusters: invisible at normal sizes,
+        # renders as '-' at the break point when the word overflows the viewport.
+        inner = '­'.join(f'<span class="g">{c}</span>' for c in clusters)
         parts.append(f'<span class="word">{inner}</span>')
     return ' '.join(parts)
