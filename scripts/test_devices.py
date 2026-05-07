@@ -7,6 +7,7 @@ sys.path.insert(0, ROOT)
 from modules.tester.validator import validate_epub
 from modules.tester.runner import render_all, SCENARIOS, PAGES_TO_CAPTURE
 from modules.tester.device_profiles import ALL_DEVICES
+from modules.tester.differ import compute_diff
 
 EPUB_PATH = os.path.join(ROOT, 'output', 'Japji_Sahib.epub')
 
@@ -19,9 +20,24 @@ def _read_version() -> str:
     return 'unversioned'
 
 
+def _find_baseline(current_version: str) -> str | None:
+    output_dir = os.path.join(ROOT, 'output')
+    versions = [d for d in os.listdir(output_dir) if d.startswith('v') and os.path.isdir(os.path.join(output_dir, d))]
+    versions.sort(key=lambda x: [int(p) for p in re.findall(r'\d+', x)])
+    
+    baseline = None
+    for v in versions:
+        if v == f'v{current_version}':
+            break
+        baseline = v
+    return os.path.join(output_dir, baseline) if baseline else None
+
+
 if __name__ == '__main__':
+    import re
     version = _read_version()
     version_dir = os.path.join(ROOT, 'output', f'v{version}')
+    baseline_dir = _find_baseline(version)
     shots_per_device = len(SCENARIOS) * (PAGES_TO_CAPTURE + 1)
     total_shots = len(ALL_DEVICES) * shots_per_device
 
@@ -59,6 +75,42 @@ if __name__ == '__main__':
     print('-' * 40)
     results = render_all(EPUB_PATH, version_dir)
 
+    print()
+    print('STEP 4 — Visual Regression (Diff)')
+    print('-' * 40)
+    if not baseline_dir:
+        print('  [SKIP] No baseline version found for comparison.')
+    else:
+        print(f'  Baseline: {os.path.basename(baseline_dir)}')
+        regressions = []
+        for device_name, scenario_slug, shots in results:
+            # Reconstruct device slug from shots path if needed, but results has device name
+            # Actually, the results gives (device_name, scenario_slug, [shots])
+            # Let's get the device slug from the first shot's path
+            if not shots: continue
+            device_slug = os.path.basename(os.path.dirname(os.path.dirname(shots[0])))
+            
+            for shot_path in shots:
+                rel_path = os.path.relpath(shot_path, version_dir)
+                base_shot = os.path.join(baseline_dir, rel_path)
+                
+                if os.path.exists(base_shot):
+                    diff_score = compute_diff(shot_path, base_shot)
+                    if diff_score > 0.001: # 0.1% threshold
+                        regressions.append((rel_path, diff_score))
+        
+        if regressions:
+            print(f'  [FAIL] {len(regressions)} screenshots deviated from baseline!')
+            for rel, score in regressions[:10]:
+                print(f'    {rel:<40} diff: {score:.2%}')
+            if len(regressions) > 10:
+                print(f'    ... and {len(regressions) - 10} more')
+        else:
+            print('  [PASS] No visual regressions detected.')
+
+    print()
+    print('Summary')
+    print('-' * 40)
     current_device = None
     for device_name, scenario_slug, shots in results:
         if device_name != current_device:
