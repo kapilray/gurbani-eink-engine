@@ -29,7 +29,9 @@ body {
    Class-based selectors work on all EPUB renderers (Kobo ADE does not
    honour CSS :lang() selectors). Latin text in credits/titles stays in
    system serif, preventing the Kobo "missing letters" dialog. */
-.manglacharan, .sirlekh, .rahao, .pankti, .word, .g,
+/* .word and .g are structural wrappers — they inherit font-family from their
+   parent (.pankti, .ikonkar, .manglacharan…) so are intentionally omitted here. */
+.manglacharan, .sirlekh, .rahao, .pankti,
 .reader-note-closing,
 .credits-invocation, .bhul-chuk,
 .cover-title-pa {
