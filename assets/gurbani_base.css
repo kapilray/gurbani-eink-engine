@@ -1,15 +1,19 @@
 @font-face {
-    font-family: 'TiroGurmukhi';
+    font-family: 'GurmukhiMain';
     src: url('../fonts/NotoSansGurmukhi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
-/* TiroGurmukhi used only for the Ik Onkar glyph ੴ (U+0A74).
+/* GurmukhiIkonkar used only for the Ik Onkar glyph ੴ (U+0A74).
    NotoSansGurmukhi's ekonkarguru path is too complex for Kobo Clara Color's
    rasterizer at large user font sizes — it renders as a hatched box.
-   TiroGurmukhi's ੴ is a simpler outline and survives the same sizes fine. */
+   Tiro Gurmukhi's ੴ is a simpler outline and survives the same sizes fine. */
 @font-face {
-    font-family: 'TiroIkonkar';
+    font-family: 'GurmukhiIkonkar';
     src: url('../fonts/TiroGurmukhi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
 @page {
@@ -25,7 +29,7 @@ body {
     text-align: center;
 }
 
-/* Apply NotoSansGurmukhi to all Gurmukhi content.
+/* Apply GurmukhiMain to all Gurmukhi content.
    Class-based selectors work on all EPUB renderers (Kobo ADE does not
    honour CSS :lang() selectors). Latin text in credits/titles stays in
    system serif, preventing the Kobo "missing letters" dialog. */
@@ -35,14 +39,14 @@ body {
 .reader-note-closing,
 .credits-invocation, .bhul-chuk,
 .cover-title-pa {
-    font-family: 'TiroGurmukhi', serif;
+    font-family: 'GurmukhiMain', serif;
 }
 
-/* Ik Onkar ੴ uses TiroGurmukhi — simpler glyph path survives Kobo Clara
+/* Ik Onkar ੴ uses GurmukhiIkonkar — simpler glyph path survives Kobo Clara
    Color's rasterizer at maximum user font size; NotoSansGurmukhi's version
    renders as a hatched box on Clara at large sizes. */
 .ikonkar, .reader-note-ikonkar, .credits-ikonkar, .cover-ikonkar {
-    font-family: 'TiroIkonkar', serif;
+    font-family: 'GurmukhiIkonkar', serif;
 }
 
 /* ── Pauri block ─────────────────────────────────────────── */
@@ -277,9 +281,12 @@ body {
     margin-top: 0.8em;
 }
 
-/* ── Cover page ──────────────────────────────────────────── */
-.cover-ikonkar, .cover-title-pa {
-    font-family: 'TiroGurmukhi', serif;
+/* ── Cover page (legacy/standalone) ──────────────────────── */
+.cover-ikonkar {
+    font-family: 'GurmukhiIkonkar', serif;
+}
+.cover-title-pa {
+    font-family: 'GurmukhiMain', serif;
 }
 
 .cover-ikonkar {

@@ -74,8 +74,8 @@ class TestCSSFontInheritance:
 
     def test_ikonkar_uses_tiro_font(self, css_rules):
         """
-        .ikonkar (and related ikonkar classes) must use TiroIkonkar, not
-        the main NotoSansGurmukhi family.  This is what keeps ੴ rendering
+        .ikonkar (and related ikonkar classes) must use GurmukhiIkonkar, not
+        the main GurmukhiMain family.  This is what keeps ੴ rendering
         correctly on Kobo Clara Color at maximum font size.
         """
         ikonkar_fonts = {
@@ -85,13 +85,12 @@ class TestCSSFontInheritance:
         }
         assert ikonkar_fonts, "No font-family found for any .ikonkar selector"
         for family in ikonkar_fonts:
-            assert 'tiroikonkar' in family.lower() or 'tiro' in family.lower(), (
-                f"Ikonkar selectors use '{family}' — expected 'TiroIkonkar'"
+            assert 'gurmukhiikonkar' in family.lower(), (
+                f"Ikonkar selectors use '{family}' — expected 'GurmukhiIkonkar'"
             )
 
     def test_pankti_uses_noto_font(self, css_rules):
-        """Main text must use NotoSansGurmukhi (family name 'TiroGurmukhi' in CSS,
-        backed by NotoSansGurmukhi.ttf) — not the ikonkar font."""
+        """Main text must use GurmukhiMain — not the ikonkar font."""
         pankti_fonts = {
             decls['font-family']
             for sel, decls in css_rules
@@ -99,8 +98,8 @@ class TestCSSFontInheritance:
         }
         assert pankti_fonts, "No font-family found for .pankti"
         for family in pankti_fonts:
-            assert 'tiroikonkar' not in family.lower(), (
-                f".pankti uses '{family}' — should NOT use the ikonkar font"
+            assert 'gurmukhimain' in family.lower(), (
+                f".pankti uses '{family}' — should use 'GurmukhiMain'"
             )
 
     def test_ikonkar_and_pankti_use_different_fonts(self, css_rules):

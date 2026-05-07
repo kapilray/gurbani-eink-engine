@@ -82,6 +82,7 @@ def _build_content_xhtml(pauris: list[dict]) -> str:
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pa" lang="pa">
 <head>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Japji Sahib</title>
   <link rel="stylesheet" type="text/css" href="styles/gurbani_base.css"/>
 </head>
@@ -97,6 +98,7 @@ def _build_reader_note_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Before You Begin</title>
   <link rel="stylesheet" type="text/css" href="{css_href}"/>
 </head>
@@ -121,6 +123,7 @@ def _build_credits_xhtml(css_href: str = 'styles/gurbani_base.css') -> str:
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Acknowledgements</title>
   <link rel="stylesheet" type="text/css" href="{css_href}"/>
 </head>
@@ -227,27 +230,22 @@ def build_epub(
     # (viewBox → viewbox, preserveAspectRatio → preserveaspectratio) and strip
     # the <style> tag.  Raw bytes are written to the EPUB zip unchanged.
     ver_label = f' v{version}' if version else ''
+    # Kobo-optimised full-bleed cover template. No whitespace between tags.
     cover_bytes_xhtml = f'''<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>Japji Sahib{ver_label}</title>
-  <style type="text/css">
-    @page {{ margin: 0; }}
-    html, body {{ margin: 0; padding: 0; width: 100%; height: 100%; }}
-    svg {{ display: block; width: 100%; height: 100%; }}
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Japji Sahib{ver_label}</title>
+<style type="text/css">
+@page {{ margin: 0; padding: 0; }}
+html, body {{ margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000000; }}
+div {{ width: 100%; height: 100%; }}
+svg {{ width: 100%; height: 100%; display: block; }}
+</style>
 </head>
-<body>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:xlink="http://www.w3.org/1999/xlink"
-     version="1.1" width="100%" height="100%"
-     viewBox="0 0 {cover_w} {cover_h}"
-     preserveAspectRatio="xMidYMid meet">
-  <image width="{cover_w}" height="{cover_h}" xlink:href="images/cover.jpg"/>
-</svg>
-</body>
+<body><div><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="100%" height="100%" viewBox="0 0 {cover_w} {cover_h}" preserveAspectRatio="xMidYMid meet"><image width="{cover_w}" height="{cover_h}" xlink:href="images/cover.jpg"/></svg></div></body>
 </html>'''.encode('utf-8')
     cover_ch = epub.EpubItem(
         uid='cover',

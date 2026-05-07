@@ -81,18 +81,33 @@ SCENARIOS = [
 ]
 
 
-def extract_epub(epub_path: str, extract_dir: str) -> str:
+def extract_epub(epub_path: str, extract_dir: str) -> list[str]:
     if os.path.exists(extract_dir):
         shutil.rmtree(extract_dir)
     os.makedirs(extract_dir)
     with zipfile.ZipFile(epub_path, 'r') as z:
         z.extractall(extract_dir)
-    skip = {'nav.xhtml', 'cover.xhtml', 'credits.xhtml'}
+    
+    xhtml_files = []
+    # Important files in priority order
+    priority = ['cover.xhtml', 'nav.xhtml', 'japji_sahib.xhtml', 'credits.xhtml']
+    
+    all_found = []
     for root, _, files in os.walk(extract_dir):
-        for f in sorted(files):
-            if f.endswith('.xhtml') and f not in skip:
-                return os.path.join(root, f)
-    raise FileNotFoundError('No content XHTML found in EPUB')
+        for f in files:
+            if f.endswith('.xhtml'):
+                all_found.append(os.path.join(root, f))
+    
+    # Sort by priority, then by name
+    def sort_key(path):
+        fname = os.path.basename(path)
+        try:
+            return (priority.index(fname), fname)
+        except ValueError:
+            return (len(priority), fname)
+            
+    all_found.sort(key=sort_key)
+    return all_found
 
 
 def _find_nav(extract_dir: str) -> str | None:
@@ -172,11 +187,8 @@ def render_all(
         scenarios = SCENARIOS
 
     extract_dir  = os.path.join(version_dir, '_epub_extracted')
-    content_path = extract_epub(epub_path, extract_dir)
-    nav_path     = _find_nav(extract_dir)
-    content_url  = Path(content_path).as_uri()
-    nav_url      = Path(nav_path).as_uri() if nav_path else content_url
-
+    xhtml_paths  = extract_epub(epub_path, extract_dir)
+    
     results = []
     with sync_playwright() as p:
         browser = p.webkit.launch()
@@ -184,11 +196,25 @@ def render_all(
 
         for device in devices:
             for scenario in scenarios:
-                url = nav_url if scenario.target == 'nav' else content_url
-                shot_dir = os.path.join(version_dir, device.slug, scenario.slug)
-                os.makedirs(shot_dir, exist_ok=True)
-                shots = _render_device(page, device, scenario, url, shot_dir)
-                results.append((device.name, scenario.slug, shots))
+                for xhtml_path in xhtml_paths:
+                    fname = os.path.basename(xhtml_path).replace('.xhtml', '')
+                    
+                    # Skip nav in non-nav scenarios and vice-versa to keep output manageable
+                    if scenario.target == 'nav' and fname != 'nav':
+                        continue
+                    if scenario.target == 'content' and fname == 'nav':
+                        continue
+                    
+                    url = Path(os.path.abspath(xhtml_path)).as_uri()
+                    # Include the filename in the slug if it's not the main content
+                    sub_slug = scenario.slug
+                    if fname != 'japji_sahib' and scenario.target != 'nav':
+                        sub_slug = f"{scenario.slug}_{fname}"
+                        
+                    shot_dir = os.path.join(version_dir, device.slug, sub_slug)
+                    os.makedirs(shot_dir, exist_ok=True)
+                    shots = _render_device(page, device, scenario, url, shot_dir)
+                    results.append((device.name, sub_slug, shots))
 
         browser.close()
 
